@@ -22,7 +22,7 @@ def polynomial(x: float, *args) -> Callable:
         a0 + a1*x + a2*x^2 + a3*x^3 + ...
     """
     args,=args
-    func = 0.0
+    func: float = 0.0
     for i,coeff in enumerate(args):
         func+=coeff*x**i
         
@@ -89,7 +89,7 @@ def significance(eps: float, percent: bool = True) -> int:
     Returns:
         int: Number of significant digits
     """
-    eps = np.abs(eps) if percent else np.abs(eps)*100
+    eps: float = np.abs(eps) if percent else np.abs(eps)*100
     
     return np.floor(2-np.log10(2*eps))
 
@@ -126,12 +126,12 @@ def precise_derivative(func: Callable, x: float, h: float = 0.1, adjust: float =
         tuple: Differentiated value, number of itterations taken
     """
     df_old = err = seed
-    count = 0
+    count: int = 0
     while (err > eps):
         count+=1
-        df = derivative(func, x, h)
-        err = abs_rel_err(df, df_old, percent)
-        df_old = df
+        df: float = derivative(func, x, h)
+        err: float = abs_rel_err(df, df_old, percent)
+        df_old: float = df
         h/=adjust
         
     return df, count
@@ -149,9 +149,10 @@ def taylor_series(func: Callable, n: int, x0: float = 0) -> Callable:
     """
     import sympy as sy
     
-    x = sy.symbols("x")
-    result = 0
-    count = i = 0
+    x: object = sy.symbols("x")
+    result: float = 0
+    count: int = 0
+    i: int = 0
     while(count < n):
         dy = func.subs(x,x0)*(x-x0)**i/np.math.factorial(i)
         result+=dy
@@ -176,7 +177,7 @@ def divided_diff(x: list[float], y: list[float], *args) -> float:
     if len(args) == 2:
         return (y[args[1]] - y[args[0]])/(x[args[1]] - x[args[0]])
         
-    diff = (divided_diff(x, y, args[:-1]) - divided_diff(x, y, args[1:]))/\
+    diff: float = (divided_diff(x, y, args[:-1]) - divided_diff(x, y, args[1:]))/\
         (x[args[0]]-x[args[-1]])
         
     return diff
@@ -195,22 +196,22 @@ def poly_interpolation(xdata: list[float], ydata: list[float], x: float, deg: in
         numpy.ndarray: Array of coefficient values
     """
     if not isinstance(xdata, np.ndarray):
-        xdata = np.array(xdata)
+        xdata: np.ndarray = np.array(xdata)
     if not isinstance(ydata, np.ndarray):
-        ydata = np.array(ydata)
+        ydata: np.ndarray = np.array(ydata)
     if not isinstance(xdata, np.ndarray):
-        x = np.array(x)
+        x: np.ndarray = np.array(x)
         
     index = np.max(np.where(xdata<=x)) - shift
-    X = np.zeros((deg+1, deg+1))
-    B = np.zeros(deg+1)
-    power = np.arange(0,deg+1)
+    X: np.ndarray = np.zeros((deg+1, deg+1))
+    B: np.ndarray = np.zeros(deg+1)
+    power: np.ndarray = np.arange(0,deg+1)
 
     for i,_ in enumerate(X):
         X[i] = xdata[index+i]**power
         B[i] = ydata[index+i]
         
-    soln = np.linalg.solve(X, B)
+    soln: np.ndarray = np.linalg.solve(X, B)
     
     return soln
 
@@ -226,20 +227,20 @@ def linear_spline_interpolation(xdata: list[float], ydata: list[float], x: float
         np.ndarray: Array of coefficinets at each spline
     """
     if not (isinstance(xdata, np.ndarray)):
-        xdata = np.array(xdata)
+        xdata: np.ndarray = np.array(xdata)
     if not (isinstance(ydata, np.ndarray)):
-        ydata = np.array(ydata)
+        ydata: np.ndarray = np.array(ydata)
     if not (isinstance(xdata, np.ndarray)):
-        x = np.array(x)
+        x: np.ndarray = np.array(x)
     
-    coeff = []
+    coeff: list[float] = []
     
     for index,_ in enumerate(xdata[:len(xdata)-1]):
-        X = np.array([[1, xdata[index]],
+        X: np.ndarray = np.array([[1, xdata[index]],
                     [1, xdata[index+1]]])
-        B = np.array([ydata[index],
+        B: np.ndarray = np.array([ydata[index],
                     ydata[index+1]])
-        soln = np.linalg.solve(X, B)
+        soln: np.ndarray = np.linalg.solve(X, B)
         coeff.append(soln)
     
     return np.array(coeff)
@@ -256,16 +257,16 @@ def quadratic_spline_interpolation(xdata: list[float], ydata: list[float], x: fl
         np.ndarray: Array of coefficinets at each spline
     """
     if not (isinstance(xdata, np.ndarray)):
-        xdata = np.array(xdata)
+        xdata: np.ndarray = np.array(xdata)
     if not (isinstance(ydata, np.ndarray)):
-        ydata = np.array(ydata)
+        ydata: np.ndarray = np.array(ydata)
     if not (isinstance(xdata, np.ndarray)):
-        x = np.array(x)
+        x: np.ndarray = np.array(x)
         
-    lenx = len(xdata)-1
+    lenx: int = len(xdata)-1
     
-    X = np.zeros((3*lenx, 3*lenx))
-    B = np.zeros(3*lenx)
+    X: np.ndarray = np.zeros((3*lenx, 3*lenx))
+    B: np.ndarray = np.zeros(3*lenx)
     X[0][0] = xdata[0]*xdata[0]
     X[0][1] = xdata[0]
     X[0][2] = 1
@@ -295,7 +296,7 @@ def quadratic_spline_interpolation(xdata: list[float], ydata: list[float], x: fl
         B[2*i+1] = ydata[i+1]
         B[2*i+2] = ydata[i+1]  
     
-    coeff = np.linalg.solve(X,B)
+    coeff: np.ndarray = np.linalg.solve(X,B)
     coeff = np.reshape(coeff, (int(len(coeff)/3),3))
     
     return coeff
@@ -314,16 +315,16 @@ def nddp(xdata: list[float], ydata: list[float], x: float, order: int, shift: in
         float: Interpolated value
     """
     if not isinstance(xdata, np.ndarray):
-        xdata = np.array(xdata)
+        xdata: np.ndarray = np.array(xdata)
     if not isinstance(ydata, np.ndarray):
-        ydata = np.array(ydata)
+        ydata: np.ndarray = np.array(ydata)
     if not isinstance(xdata, np.ndarray):
-        x = np.array(x)
+        x: np.ndarray = np.array(x)
     
-    index = np.max(np.where(xdata<=x)) - shift
-    val = ydata[index]
+    index: int = np.max(np.where(xdata<=x)) - shift
+    val: float = ydata[index]
     for i in range(order):
-        arr = np.arange(index, index+i+2)
+        arr: np.ndarray = np.arange(index, index+i+2)
         val+=divided_diff(xdata, ydata, arr[::-1].tolist())*\
             np.prod(x-xdata[index:index+i+1])
     
@@ -342,8 +343,8 @@ def euler_first(func: Callable, h: float, x_stop: float, y_start: float, x_start
     Returns:
         numpy.ndarray: Returns array of y values till x_stop
     """
-    x = np.arange(x_start, x_stop+h, h)
-    y = np.zeros(len(x))
+    x: np.ndarray = np.arange(x_start, x_stop+h, h)
+    y: np.ndarray = np.zeros(len(x))
     y[0] = y_start
     for i,val in enumerate(x[1:]):
         y[i+1] = y[i] + func(val, y[i])*h
@@ -364,8 +365,8 @@ def rk_2(func: Callable, h: float, x_stop: float, y_start: float, x_start: float
     Returns:
         numpy.ndarray: Integrated values
     """
-    x = np.arange(x_start, x_stop+h, h)
-    y = np.zeros(len(x))
+    x: np.ndarray = np.arange(x_start, x_stop+h, h)
+    y: np.ndarray = np.zeros(len(x))
     y[0] = y_start
     if method == "heun":
         a1, a2, b1, c1 = 0.5, 0.5, 1, 1
@@ -374,8 +375,8 @@ def rk_2(func: Callable, h: float, x_stop: float, y_start: float, x_start: float
     elif method == "ralston":
         a1, a2, b1, c1 = 1/3, 2/3, 3/4, 3/4
     for i,val in enumerate(x[1:]):
-        k1 = func(val, y[i])
-        k2 = func(val+b1*h, y[i]+c1*k1*h)
+        k1: float = func(val, y[i])
+        k2: float = func(val+b1*h, y[i]+c1*k1*h)
         y[i+1] = y[i] + (a1*k1 + a2*k2)*h
             
     return y
@@ -394,14 +395,14 @@ def rk_4(func: Callable, h: float, x_stop: float, y_start: float, x_start: float
     Returns:
         numpy.ndarray: Integrated values
     """
-    x = np.arange(x_start, x_stop+h, h)
-    y = np.zeros(len(x))
+    x: np.ndarray = np.arange(x_start, x_stop+h, h)
+    y: np.ndarray = np.zeros(len(x))
     y[0] = y_start
     for i,val in enumerate(x[1:]):
-        k1 = func(val, y[i])
-        k2 = func(val+0.5*h, y[i]+0.5*k1*h)
-        k3 = func(val+0.5*h, y[i]+0.5*k2*h)
-        k4 = func(val+h, y[i]+k3*h)
+        k1: float = func(val, y[i])
+        k2: float = func(val+0.5*h, y[i]+0.5*k1*h)
+        k3: float = func(val+0.5*h, y[i]+0.5*k2*h)
+        k4: float = func(val+h, y[i]+k3*h)
         y[i+1] = y[i] + (1/6)*(k1 + 2*k2 + 2*k3 + k4)*h
             
     return y
@@ -418,9 +419,9 @@ def trapezoidal(func: Callable, N: int, x_start: float, x_stop: float) -> float:
     Returns:
         float: Integrated result
     """
-    h = (x_stop-x_start)/N
-    x = np.arange(x_start+h, x_stop, h)
-    result = 0.5*h*(func(x_start) + func(x_stop) + 2*np.sum(func(x)))
+    h: float = (x_stop-x_start)/N
+    x: np.ndarray = np.arange(x_start+h, x_stop, h)
+    result: float = 0.5*h*(func(x_start) + func(x_stop) + 2*np.sum(func(x)))
             
     return result
 
@@ -436,9 +437,9 @@ def simpsons1_3(func: Callable, N: int, x_start: float, x_stop: float) -> float:
     Returns:
         float: Integrated result
     """
-    h = (x_stop-x_start)/N
-    x = np.arange(x_start+h, x_stop, h)
-    result = (1/3)*h*(func(x_start) + func(x_stop) + 
+    h: float = (x_stop-x_start)/N
+    x: np.ndarray = np.arange(x_start+h, x_stop, h)
+    result: float = (1/3)*h*(func(x_start) + func(x_stop) + 
             4*np.sum(func(x[::2])) + 2*np.sum(func(x[1::2])))
             
     return result
@@ -455,9 +456,9 @@ def simpsons3_8(func: Callable, N: int, x_start: float, x_stop: float) -> float:
     Returns:
         float: Integrated result
     """
-    h = (x_stop-x_start)/N
-    x = np.arange(x_start+h, x_stop, h)
-    result = (3/8)*h*(func(x_start) + func(x_stop) + 
+    h: float = (x_stop-x_start)/N
+    x: np.ndarray = np.arange(x_start+h, x_stop, h)
+    result: float = (3/8)*h*(func(x_start) + func(x_stop) + 
             3*np.sum(func(x[::3])) + 3*np.sum(func(x[1::3])) + 
             2*np.sum(func(x[2::3])))
             
@@ -476,18 +477,18 @@ def poly_regression(x: list[float], y: list[float], deg: int) -> np.ndarray:
         of the form a0 + a1*x + a2*x^2 + ...
     """
     if not isinstance(x, np.ndarray):
-        x = np.array(x)
+        x: np.ndarray = np.array(x)
     if not isinstance(y, np.ndarray):
-        y = np.array(y)
-    X = np.zeros((deg+1,deg+1))
-    B = np.zeros(deg+1)
+        y: np.ndarray = np.array(y)
+    X: np.ndarray = np.zeros((deg+1,deg+1))
+    B: np.ndarray = np.zeros(deg+1)
     for i,_ in enumerate(X):
         for j,_ in enumerate(X):
             X[i][j] = np.sum(x**(j+i))
     for i,_ in enumerate(B):
         B[i] = np.sum(y*x**i)
     
-    result = np.linalg.solve(X,B)
+    result: np.ndarray = np.linalg.solve(X,B)
     
     return result
 
@@ -503,9 +504,9 @@ def exp_regression(x: list[float], y: list[float]) -> tuple:
         of the form a0*e^(x*a1)
     """
     if not isinstance(x, np.ndarray):
-        x = np.array(x)
+        x: np.ndarray = np.array(x)
     if not isinstance(y, np.ndarray):
-        y = np.array(y)
+        y: np.ndarray = np.array(y)
     a0, a1 = poly_regression(x, np.log(y), 1)
     
     return np.exp(a0),a1
@@ -522,9 +523,9 @@ def pow_regression(x: list[float], y: list[float]) -> tuple:
         of the form a0*x^a1
     """
     if not isinstance(x, np.ndarray):
-        x = np.array(x)
+        x: np.ndarray = np.array(x)
     if not isinstance(y, np.ndarray):
-        y = np.array(y)
+        y: np.ndarray = np.array(y)
     a0, a1 = poly_regression(np.log(x), np.log(y), 1)
     
     return np.exp(a0),a1
@@ -546,15 +547,15 @@ def bisection(func: Callable, left: float, right: float, eps_x: float = 0, eps_f
         tuple: x value, Function value at x, number of itterations taken
     """
     if func(left)*func(right) < 0:
-        x = np.array([left, right], dtype=np.float64)
-        c_old = np.mean(x)
-        old = func(c_old)
+        x: np.ndarray = np.array([left, right], dtype=np.float64)
+        c_old: float = np.mean(x)
+        old: float = func(c_old)
         if (np.abs(old)<eps_f):
-            root = c_old
+            root: float = c_old
             
             return root, func(root), 0
-        err = 100
-        count = 0
+        err: float = 100
+        count: int = 0
         while(np.abs(func(c_old))>eps_f or err>eps_x):
             count+=1
             x = np.insert(x, 1, c_old)
@@ -562,7 +563,7 @@ def bisection(func: Callable, left: float, right: float, eps_x: float = 0, eps_f
                 x = x[:2]
             else:
                 x = x[1:]
-            c_new = np.mean(x)
+            c_new: float = np.mean(x)
             err = abs_rel_err(c_new, c_old)
             c_old = c_new
             
@@ -582,11 +583,11 @@ def newton_raphson(func: Callable, dfunc: Callable, guess: float, eps_x: float =
     Returns:
         tuple: x value, Function value at x, number of itterations taken
     """
-    x_old = guess
+    x_old: float = guess
     if np.abs(func(x_old)) < eps_f:
         return x_old, func(x_old), 0
-    err = 100
-    count = 0
+    err: float = 100
+    count: int = 0
     while(np.abs(func(x_old))>eps_f or err>eps_x):
         count+=1
         x_new = x_old - func(x_old)/dfunc(x_old)
@@ -608,14 +609,14 @@ def secant(func: Callable, guess_1: float, guess_2: float, eps_x: float = 0, eps
     Returns:
         tuple: x value, Function value at x, number of itterations taken
     """
-    x_1 = guess_1
-    x_2old = guess_2
+    x_1: float = guess_1
+    x_2old: float = guess_2
     if (np.abs(func(x_1)) < eps_f):
         return x_1, func(x_1), 0
     elif (np.abs(func(x_2old)) < eps_f):
         return x_2old, func(x_2old), 0
-    err = 100
-    count = 0
+    err: float = 100
+    count: int = 0
     while(np.abs(func(x_2old))>eps_f or err>eps_x):
         count+=1
         x_2new = x_2old - func(x_2old)*(x_2old-x_1)/(func(x_2old)-func(x_1))
