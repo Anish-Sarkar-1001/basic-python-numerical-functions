@@ -12,5 +12,5 @@ All these support diffrent algorithms and are flexibe
 ## Instructions
 - Copy the module to the location of your file
 - Import the module as
->  import numerics as nm
--Follow the examples.ipynb and example.pdf on how to use the module
+>    import numerics as nm
+- Follow the examples.ipynb and example.pdf on how to use the module
