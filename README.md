@@ -1,7 +1,7 @@
 # Readme  
 
 ## Introduction
-This is a basic python module for beginners whch demonstartes different numerical techniques which include:
+This is a basic python module for beginners demonstrating different numerical techniques which include:
 - **Integration**
   - Trapezoidal
   - Simpsons 1/3
