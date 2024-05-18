@@ -1,7 +1,7 @@
 """
 
 Essential functions of numerical methods
-__version__: 1.0.0
+__version__: 1.05.24
 @author: Anish Sarkar
 Dependencies: Numpy, Sympy (optional)
 
